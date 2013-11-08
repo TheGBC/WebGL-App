@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script src="three.min.js"></script>
+	<script src="KeyboardJS-master/keyboard.js"></script>
+	<script src="webGL.js"></script>
+	<script src="OBJLoader.js"></script>
+    <script defer="defer">
+      // revolutions per second
+      var angularSpeed = 0.2; 
+      var lastTime = 0;
+      
+	 function degInRad(deg) {
+		return deg * Math.PI / 180;
+	}
+      // this function is executed on each animation frame
+      function animate(){
+        // update
+        /*var time = (new Date()).getTime();
+        var timeDiff = time - lastTime;
+        var angleChange = angularSpeed * timeDiff * 2 * Math.PI / 1000;
+        cube.rotation.y += angleChange;
+        lastTime = time;
+		*/
+		
+		if (leftPressed) {
+		neck.rotation.y += degInRad(2);
+		} else if (rightPressed) {
+			neck.rotation.y -= degInRad(2);
+		}
+		if (upPressed) {
+			neck.rotation.x += degInRad(2);
+		} else if (downPressed) {
+			neck.rotation.x -= degInRad(2);
+		}
+	
+        // render
+        renderer.render(scene, camera);
+ 
+        // request new frame
+        requestAnimationFrame(function(){
+            animate();
+        });
+      }
+
+      // renderer
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth -10, window.innerHeight-10);
+      document.body.appendChild(renderer.domElement);
+ 
+    // camera
+      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+      camera.position.z = 500;
+	 
+		//Camera neck for rotation
+		var neck;
+ 
+      // scene
+      var scene = new THREE.Scene();
+	  
+	  //LOADER CODE
+	  var manager = new THREE.LoadingManager();
+				
+	  var loader = new THREE.OBJLoader( manager );
+		loader.load( 'ScannedModel.obj', new THREE.MeshNormalMaterial());
+	  
+	  //Variables
+	  var leftPressed = false;
+	  var rightPressed = false;
+	  var upPressed = false;
+	  var downPressed = false;
+     	  
+      // cube
+      var cube = new THREE.Mesh(new THREE.CubeGeometry(125, 125, 125), new THREE.MeshNormalMaterial());
+	  var kinect1 = new THREE.Mesh(new THREE.CubeGeometry(25, 25, 25), new THREE.MeshNormalMaterial());
+	  var kinect2 = new THREE.Mesh(new THREE.CubeGeometry(25, 25, 25), new THREE.MeshNormalMaterial());
+	  kinect1.rotation.x= Math.PI * 1.1;
+	  kinect2.rotation.x = Math.PI * 1.1;
+      cube.overdraw = true;
+      cube.rotation.x = Math.PI * 0.1;
+      scene.add(cube);
+	  scene.add(kinect1);
+	  scene.add(kinect2);
+	  kinect1.position = new THREE.Vector3(100, 100, 100);
+	  kinect2.position = new THREE.Vector3(-100,100,100);
+
+	//setup neck for camera roation
+	neck = new THREE.Object3D();
+    neck.rotation = new THREE.Vector3(0.1, 0, 0);
+    neck.up = new THREE.Vector3(0, 0, 1);
+    neck.position.z = 1;
+    neck.position.y = -5;
+    neck.add(camera);
+    scene.add(neck);
+	
+	//Camera rotation with keyboardJS library
+	KeyboardJS.on('left', function() { leftPressed = true; }, function() { leftPressed = false; });
+    KeyboardJS.on('right', function() { rightPressed = true; }, function() { rightPressed = false; });
+    KeyboardJS.on('up', function() { upPressed = true; }, function() { upPressed = false; });
+    KeyboardJS.on('down', function() { downPressed = true; }, function() { downPressed = false; });
+
+      // start animation
+      animate();
+    </script>
+  </body>
+</html>
